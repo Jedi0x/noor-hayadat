@@ -2,6 +2,8 @@
 
 QuranScan is a modern web application that identifies Quranic Ayat, Hadith, or Azkar from screenshots using Google Gemini Vision AI. It provides accurate references, IndoPak Arabic text, and Urdu translations in a beautifully rendered, shareable card format.
 
+**Repository:** [github.com/Jedi0x/noor-hayadat](https://github.com/Jedi0x/noor-hayadat)
+
 ---
 
 ## 🚀 Step-by-Step Setup Guide
