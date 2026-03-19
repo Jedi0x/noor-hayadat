@@ -1,0 +1,52 @@
+/*
+ * Quranic Arabic & Urdu typography.
+ * Optional local fonts: place NoorHiraArabic.woff2 and NafeesWebNaskh.woff2 in public/fonts/
+ * and uncomment the @font-face blocks below. Until then, Google Fonts (layout.tsx) are used.
+ */
+
+/* Uncomment when files exist at public/fonts/
+@font-face {
+  font-family: 'NoorHira';
+  src: url('/fonts/NoorHiraArabic.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'NafeesWeb';
+  src: url('/fonts/NafeesWebNaskh.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+*/
+
+.arabic-indopak {
+  /* Scheherazade New + Noto Naskh Arabic load from Google Fonts (no 404) */
+  font-family: 'Scheherazade New', 'Noto Naskh Arabic', 'Amiri', serif;
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  line-height: 2.2;
+  direction: rtl;
+  text-align: right;
+  letter-spacing: 0;
+  color: #0d3b2e; /* emerald-950 — explicit contrast on light panels */
+}
+
+.urdu-text {
+  font-family: 'Noto Nastaliq Urdu', 'Noto Sans Arabic', serif;
+  font-size: clamp(1.1rem, 2vw, 1.4rem);
+  line-height: 2;
+  direction: rtl;
+  text-align: right;
+  color: inherit;
+}
+
+.arabic-naskh {
+  font-family: 'Noto Naskh Arabic', 'Scheherazade New', 'Amiri', serif;
+  font-size: clamp(1.5rem, 3.5vw, 2.5rem);
+  line-height: 2;
+  direction: rtl;
+  text-align: right;
+  color: #0d3b2e;
+}

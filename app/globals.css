@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Light theme only — dark OS mode was forcing white body text on cream UI (unreadable Arabic). */
+:root {
+  --foreground-rgb: 13, 59, 46; /* emerald-950 */
+  --background-start-rgb: 245, 240, 232; /* cream-50 */
+  --background-end-rgb: 255, 253, 246; /* cream-100 */
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+}

@@ -1,0 +1,108 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// ORIGINAL TABLES (from AbdullahGhanem/quran-database)
+model surahs {
+  id           Int      @id
+  name         String   @db.VarChar(50)
+  name_simple  String   @db.VarChar(50)
+  revelation   String   // Meccan/Medinan
+  ayahs_count  Int
+  ayahs        ayahs[]
+}
+
+model editions {
+  id           Int      @id
+  identifier   String   @db.VarChar(50)
+  language     String   @db.VarChar(10)
+  name         String   @db.VarChar(100)
+  type         String   // quran, translation, transliteration
+  ayah_editions ayah_editions[]
+}
+
+model ayahs {
+  id           Int      @id
+  surah_id     Int
+  number       Int
+  text         String   @db.Text
+  surah        surahs   @relation(fields: [surah_id], references: [id])
+  ayah_editions ayah_editions[]
+  ayahs_indopak ayahs_indopak?
+  ayahs_urdu    ayahs_urdu?
+}
+
+model ayah_editions {
+  id           Int      @id @default(autoincrement())
+  ayah_id      Int
+  edition_id   Int
+  text         String   @db.Text
+  ayah         ayahs    @relation(fields: [ayah_id], references: [id])
+  edition      editions @relation(fields: [edition_id], references: [id])
+}
+
+// EXTENDED TABLES (added by this project)
+model ayahs_indopak {
+  ayah_id      Int      @id
+  text_ip      String   @db.Text
+  ayah         ayahs    @relation(fields: [ayah_id], references: [id])
+}
+
+model ayahs_urdu {
+  ayah_id      Int      @id
+  translation  String   @db.Text
+  translator   String   @db.VarChar(100)
+  ayah         ayahs    @relation(fields: [ayah_id], references: [id])
+}
+
+model hadith_books {
+  id           Int      @id @default(autoincrement())
+  name_ar      String   @db.VarChar(100)
+  name_en      String   @db.VarChar(100)
+  name_ur      String   @db.VarChar(100)
+  identifier   String   @unique @db.VarChar(50)
+  hadiths      hadiths[]
+}
+
+model hadiths {
+  id           Int      @id @default(autoincrement())
+  book_id      Int
+  chapter_no   Int?
+  hadith_no    String   @db.VarChar(20)
+  text_ar      String   @db.Text
+  text_ur      String?  @db.Text
+  chain        String?  @db.Text
+  grade        String?  @db.VarChar(50)
+  book         hadith_books @relation(fields: [book_id], references: [id])
+}
+
+model azkar {
+  id              Int      @id @default(autoincrement())
+  category        String   @db.VarChar(100)
+  text_ar         String   @db.Text
+  text_ar_ip      String?  @db.Text
+  text_ur         String?  @db.Text
+  transliteration String?  @db.Text
+  reference       String?  @db.Text
+  source_book     String?  @db.VarChar(100)
+  repetitions     Int      @default(1)
+  benefits        String?  @db.Text
+}
+
+model search_cache {
+  id           Int      @id @default(autoincrement())
+  image_hash   String   @unique @db.VarChar(64)
+  extracted_ar String?  @db.Text
+  result_type  String?  @db.VarChar(20) // ayat | hadith | azkar | unknown
+  result_id    Int?
+  result_json  Json?
+  created_at   DateTime @default(now())
+}
