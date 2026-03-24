@@ -8,7 +8,7 @@ import ReactCrop, {
   convertToPixelCrop,
 } from 'react-image-crop'
 import 'react-image-crop/dist/ReactCrop.css'
-import { Check, X } from 'lucide-react'
+import { Check, X, Crop as CropIcon } from 'lucide-react'
 
 interface ImageCropperProps {
   imageSrc: string
@@ -16,7 +16,7 @@ interface ImageCropperProps {
   onCancel: () => void
 }
 
-/** Default crop: same shape as the image (96% × 96%), centered — not a forced square. */
+/** Default crop: same shape as the image (96% × 96%), centered */
 function buildDefaultCrop(mediaWidth: number, mediaHeight: number): Crop {
   return centerCrop(
     {
@@ -39,7 +39,6 @@ export const ImageCropper: React.FC<ImageCropperProps> = ({ imageSrc, onCropComp
     const { width, height } = el
     const initial = buildDefaultCrop(width, height)
     setCrop(initial)
-    // So "Apply crop" works without dragging first (pixel crop matches current on-screen size)
     setCompletedCrop(convertToPixelCrop(initial, width, height))
   }
 
@@ -76,27 +75,39 @@ export const ImageCropper: React.FC<ImageCropperProps> = ({ imageSrc, onCropComp
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-      <div className="bg-cream-100 rounded-3xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl">
-        <div className="p-4 border-b border-emerald-950/10 flex items-center justify-between bg-cream-100">
-          <h2 className="text-xl font-bold text-emerald-950 px-2">Crop image</h2>
-          <p className="hidden sm:block text-xs text-emerald-900/50 max-w-md text-right mr-2">
-            Selection matches your photo shape. Drag corners to tighten around the text.
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-sage-950/90 backdrop-blur-md">
+      <div className="bg-sand-50 rounded-[2.5rem] w-full max-w-5xl max-h-[92vh] flex flex-col overflow-hidden shadow-2xl border-2 border-sage-300/30">
+        {/* Header */}
+        <div className="px-8 py-6 border-b-2 border-sage-200/40 flex items-center justify-between bg-gradient-to-b from-white to-sand-50/50">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-bronze-100 rounded-xl">
+              <CropIcon className="w-5 h-5 text-bronze-600" strokeWidth={2} />
+            </div>
+            <h2 className="text-xl font-bold text-sage-900">Crop image</h2>
+          </div>
+          <p className="hidden sm:block text-xs text-sage-600 max-w-md text-right font-medium">
+            Drag corners to focus on text. Default selection fits your photo.
           </p>
-          <button type="button" onClick={onCancel} className="p-2 hover:bg-emerald-950/5 rounded-full shrink-0" aria-label="Close">
-            <X className="w-6 h-6 text-emerald-950" />
+          <button
+            type="button"
+            onClick={onCancel}
+            className="p-2.5 hover:bg-sage-100 rounded-full transition-colors"
+            aria-label="Close"
+          >
+            <X className="w-6 h-6 text-sage-700" strokeWidth={2.5} />
           </button>
         </div>
 
-        <div className="flex-1 overflow-auto p-4 flex items-center justify-center bg-emerald-950/5 min-h-[200px]">
+        {/* Crop Area */}
+        <div className="flex-1 overflow-auto p-6 flex items-center justify-center bg-sage-100/30 min-h-[300px]">
           <ReactCrop
             crop={crop}
             onChange={(_, percentCrop) => setCrop(percentCrop)}
             onComplete={(pixelCrop) => setCompletedCrop(pixelCrop)}
-            className="max-h-full"
+            className="max-h-full shadow-soft-lg"
             ruleOfThirds
-            minWidth={24}
-            minHeight={24}
+            minWidth={40}
+            minHeight={40}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
@@ -104,16 +115,17 @@ export const ImageCropper: React.FC<ImageCropperProps> = ({ imageSrc, onCropComp
               alt="Crop preview"
               src={imageSrc}
               onLoad={onImageLoad}
-              className="max-w-full max-h-[min(60vh,520px)] w-auto h-auto object-contain block mx-auto"
+              className="max-w-full max-h-[min(65vh,600px)] w-auto h-auto object-contain block mx-auto rounded-2xl"
             />
           </ReactCrop>
         </div>
 
-        <div className="p-6 border-t border-emerald-950/10 flex flex-wrap justify-center gap-3 sm:gap-4 bg-cream-100">
+        {/* Actions */}
+        <div className="px-8 py-6 border-t-2 border-sage-200/40 flex flex-wrap justify-center gap-4 bg-gradient-to-t from-white to-sand-50/50">
           <button
             type="button"
             onClick={onCancel}
-            className="px-8 py-3 bg-transparent text-emerald-950 font-bold border border-emerald-950/20 rounded-full hover:bg-emerald-950/5"
+            className="px-8 py-3.5 bg-white text-sage-700 font-semibold border-2 border-sage-200 rounded-full hover:bg-sage-50 hover:border-sage-300 transition-all shadow-soft text-sm uppercase tracking-wide"
           >
             Cancel
           </button>
@@ -121,9 +133,9 @@ export const ImageCropper: React.FC<ImageCropperProps> = ({ imageSrc, onCropComp
             type="button"
             onClick={handleCrop}
             disabled={!completedCrop?.width || !completedCrop?.height}
-            className="px-8 py-3 bg-emerald-950 text-cream-50 font-bold rounded-full hover:bg-emerald-900 shadow-lg flex items-center disabled:opacity-50 disabled:pointer-events-none"
+            className="group px-10 py-3.5 bg-gradient-to-r from-bronze-500 to-bronze-600 text-white font-bold rounded-full hover:from-bronze-600 hover:to-bronze-700 shadow-soft-lg hover:shadow-2xl flex items-center disabled:opacity-40 disabled:pointer-events-none transition-all text-sm uppercase tracking-wide"
           >
-            <Check className="w-5 h-5 mr-2" />
+            <Check className="w-5 h-5 mr-2" strokeWidth={2.5} />
             Apply crop
           </button>
         </div>

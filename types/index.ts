@@ -36,6 +36,8 @@ export interface AnalyzeResponse {
   transliteration?: string
   /** Plain English meaning (not Arabic script) */
   english_translation?: string
+  /** Urdu title/narration from the screenshot (not the main Arabic block) */
+  image_context_ur?: string
   reference: Reference
   audio_url?: string
   cached: boolean

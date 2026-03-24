@@ -1,9 +1,27 @@
+/**
+ * DEPRECATED: This script only seeds surah metadata (no verses).
+ * 
+ * ⚠️ USE seed-quran-complete.ts INSTEAD ⚠️
+ * 
+ * The complete script seeds all 6,236 verses with:
+ * - Full diacritics (shadda, maddah, harakat)
+ * - Uthmani script
+ * - Indo-Pak script
+ * - Urdu translations
+ * 
+ * Run: npm run seed:quran
+ */
+
 import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
 async function main() {
-  console.log('Seeding Surahs...')
+  console.log('⚠️  WARNING: This script only seeds Surah metadata.')
+  console.log('⚠️  For full verse text with diacritics, run: npm run seed:quran')
+  console.log('⚠️  (This uses seed-quran-complete.ts instead)\n')
+  
+  console.log('Seeding Surahs only...')
 
   try {
     const res = await fetch('https://api.quran.com/api/v4/chapters?language=en')
@@ -23,7 +41,8 @@ async function main() {
         },
       })
     }
-    console.log(`Successfully seeded ${chapters.length} surahs.`)
+    console.log(`✅ Successfully seeded ${chapters.length} surahs.`)
+    console.log('\n⚠️  REMINDER: Run "npm run seed:quran" to seed all verses with full diacritics.')
   } catch (error) {
     console.error('Error seeding surahs:', error)
   }

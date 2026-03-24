@@ -7,7 +7,12 @@ const genAI = new GoogleGenerativeAI(API_KEY);
 
 export const GeminiResultSchema = z.object({
   type: z.enum(["AYAT", "HADITH", "DUA", "AZKAR", "UNKNOWN"]),
+  /** All Arabic script from the image (for matching) */
   extracted_arabic: z.string(),
+  /** Only the core Arabic dhikr/ayah/dua for the main card — no Urdu */
+  primary_arabic: z.string().nullable().optional(),
+  /** Urdu title, hadith chain, narration from the image (not the Arabic block) */
+  image_context_ur: z.string().nullable().optional(),
   is_complete: z.boolean(),
   surah_name: z.string().nullable().optional(),
   surah_number: z.number().nullable().optional(),
@@ -37,23 +42,28 @@ You are an expert Islamic scholar and Arabic text recognition specialist.
 I am sending you a screenshot that contains Arabic text from the Quran, a Hadith, a Dua, or an Islamic Azkar (remembrance).
 
 YOUR TASK:
-1. Extract ALL Arabic text visible in the image, reading right-to-left
-2. Identify the TYPE of content: [AYAT | HADITH | DUA | AZKAR | UNKNOWN]
+1. Put ALL Arabic-script text in "extracted_arabic" — PRESERVE ALL DIACRITICS (shadda ّ, sukun ْ, fatha َ, kasra ِ, damma ُ, tanween, maddah ٓ, etc.). These marks are ESSENTIAL for Quranic text.
+2. Put ONLY the main Arabic lines (dhikr, ayah, dua) in "primary_arabic" — KEEP ALL DIACRITICS. If Urdu headings or Urdu hadith text appear in the image, put that Urdu in "image_context_ur", NOT in primary_arabic. If the image is Arabic-only, set primary_arabic to null or same as extracted_arabic.
+3. Identify the TYPE of content: [AYAT | HADITH | DUA | AZKAR | UNKNOWN]
    - Use DUA for standalone supplications (e.g. Zamzam dua, morning/evening duas) that are NOT a single Quranic ayah citation
    - Use AYAT only for Quran verses (with or without surah/ayah visible)
-3. If AYAT: Identify the Surah name and Ayat number(s) when possible
-4. If HADITH: Identify which hadith book, chapter, and number if visible
-5. If DUA/AZKAR: Give common name in Arabic (dua_name) and English (dua_name_en) when known
-6. ALWAYS provide "transliteration_en": full text in Latin letters with apostrophes (e.g. Allahumma inni as'aluka 'ilman nafi'an, wa rizqan wasi'an, wa shifa'an min kulli da'in)
-7. ALWAYS provide "translation_en": short English meaning (one or two sentences)
-8. If you can, provide "translation_ur": Urdu translation in Urdu script (else null)
-9. Extract any reference information already shown in the image
-10. Note if the text appears COMPLETE or PARTIAL
+4. If AYAT: Identify the Surah name and Ayat number(s) when possible
+5. If HADITH: Identify which hadith book, chapter, and number if visible
+6. If DUA/AZKAR: Give common name in Arabic (dua_name) and English (dua_name_en) when known
+7. "transliteration_en": Latin letters for primary_arabic only (not Urdu from image_context_ur)
+8. "translation_en": English meaning of the primary Arabic only
+9. "translation_ur": standard Urdu translation of primary Arabic (separate from image_context_ur)
+10. Extract any reference information already shown in the image
+11. Note if the text appears COMPLETE or PARTIAL
+
+CRITICAL: ALWAYS preserve shadda (ّ), maddah (ٓ), and ALL harakat (tashkeel) marks in extracted_arabic and primary_arabic. These are NOT optional for Quranic text.
 
 RESPOND ONLY in this exact JSON format:
 {
   "type": "AYAT|HADITH|DUA|AZKAR|UNKNOWN",
-  "extracted_arabic": "exact arabic text from image",
+  "extracted_arabic": "all arabic script from image WITH ALL DIACRITICS",
+  "primary_arabic": "only main arabic lines WITH ALL DIACRITICS or null",
+  "image_context_ur": "urdu from image or null",
   "is_complete": true|false,
   "surah_name": "if AYAT — arabic surah name",
   "surah_number": null or integer,
@@ -65,7 +75,7 @@ RESPOND ONLY in this exact JSON format:
   "dua_name": "if DUA/AZKAR — common Arabic name or short label",
   "dua_name_en": "if DUA/AZKAR — English title e.g. Dua when drinking Zamzam",
   "reference_in_image": "any reference text visible in image",
-  "transliteration_en": "full Latin transliteration of extracted_arabic",
+  "transliteration_en": "Latin for primary_arabic / core arabic only",
   "translation_en": "English meaning of the text",
   "translation_ur": "Urdu in Urdu script or null",
   "confidence": "HIGH|MEDIUM|LOW",
@@ -73,8 +83,9 @@ RESPOND ONLY in this exact JSON format:
 }
 
 IMPORTANT:
-- Be precise with Arabic text extraction
-- transliteration_en and translation_en are REQUIRED for every response (use empty string only if impossible)
+- PRESERVE ALL DIACRITICS (ّ ْ َ ِ ُ ٓ ً ٍ ٌ ٰ etc.) — these are REQUIRED for proper Quranic rendering
+- Never put Urdu script inside primary_arabic
+- transliteration_en and translation_en are REQUIRED (empty string only if impossible)
 - Do not confuse a well-known dua with a Quranic ayah if it is not from the Mushaf as a cited verse
 - If confidence is LOW, still try your best and mark it accordingly
 `;
@@ -124,15 +135,18 @@ async function fallbackToOCRAndTextOnly(imageBuffer: Buffer): Promise<GeminiResu
       THE FOLLOWING TEXT WAS EXTRACTED FROM AN IMAGE VIA LOCAL OCR:
       "${ocrText}"
       
-      BECAUSE THE TEXT WAS EXTRACTED AUTOMATICALLY, IT MAY CONTAIN TYPOS OR DIACRITIC ERRORS. 
+      BECAUSE THE TEXT WAS EXTRACTED AUTOMATICALLY, IT MAY CONTAIN TYPOS OR MISSING DIACRITICS. 
       YOUR JOB:
-      1. Correct common Arabic OCR typos
+      1. Reconstruct the FULL Arabic text with ALL diacritics (shadda ّ, maddah ٓ, harakat, tanween)
       2. Identify if this is a Quranic Ayat, Hadith, or Azkar
       3. Return the metadata in JSON as per the rules below:
       
       ${MASTER_PROMPT}
       
-      NOTE: Set confidence to "MEDIUM" or "LOW" if the text is heavily distorted but you can still recognize the source.
+      NOTE: 
+      - Even if OCR text is missing diacritics, YOU MUST add the correct diacritics in your output
+      - Set confidence to "MEDIUM" or "LOW" if you had to reconstruct heavily
+      - For Quranic verses, ensure shadda, maddah, and all harakat are present
     `;
 
     const result = await model.generateContent(prompt);

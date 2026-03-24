@@ -1,5 +1,18 @@
 import type { GeminiResult } from './gemini'
 
+/** Arabic-only lines for the main card (not mixed Urdu from the screenshot). */
+export function arabicForDisplayCard(g: GeminiResult, fallbackFromBase?: string): string {
+  const p = g.primary_arabic?.trim()
+  if (p && p.length > 0) return p
+  if (fallbackFromBase?.trim()) return fallbackFromBase.trim()
+  return g.extracted_arabic
+}
+
+function optionalImageContext(g: GeminiResult): { image_context_ur?: string } {
+  const t = g.image_context_ur?.trim()
+  return t ? { image_context_ur: t } : {}
+}
+
 /** Attach AI transliteration / translations when DB lookup did not provide them */
 export function mergeGeminiMetadata(
   base: Record<string, unknown>,
@@ -12,11 +25,22 @@ export function mergeGeminiMetadata(
   const urdu_translation =
     (base.urdu_translation as string) || g.translation_ur || ''
 
+  const arabic_indopak = arabicForDisplayCard(
+    g,
+    (base.arabic_indopak as string) || undefined
+  )
+
+  const ctx =
+    (g.image_context_ur?.trim() || (base.image_context_ur as string) || '').trim() ||
+    undefined
+
   return {
     ...base,
+    arabic_indopak,
     transliteration,
     english_translation,
     urdu_translation,
+    ...(ctx ? { image_context_ur: ctx } : {}),
   }
 }
 
@@ -26,7 +50,7 @@ export function buildSupplicationFallback(g: GeminiResult) {
   return {
     success: true,
     type: g.type,
-    arabic_indopak: g.extracted_arabic,
+    arabic_indopak: arabicForDisplayCard(g),
     urdu_translation: g.translation_ur || '',
     transliteration: g.transliteration_en || '',
     english_translation: g.translation_en || '',
@@ -42,6 +66,7 @@ export function buildSupplicationFallback(g: GeminiResult) {
         (isAzkar ? 'Remembrance (Azkar)' : 'Islamic supplication (Dua)'),
       source: g.notes || undefined,
     },
+    ...optionalImageContext(g),
   }
 }
 
@@ -49,7 +74,7 @@ export function buildHadithFallback(g: GeminiResult) {
   return {
     success: true,
     type: 'HADITH' as const,
-    arabic_indopak: g.extracted_arabic,
+    arabic_indopak: arabicForDisplayCard(g),
     urdu_translation: g.translation_ur || '',
     transliteration: g.transliteration_en || '',
     english_translation: g.translation_en || '',
@@ -59,6 +84,7 @@ export function buildHadithFallback(g: GeminiResult) {
       hadith_number: g.hadith_number || undefined,
       reference_text: g.reference_in_image || undefined,
     },
+    ...optionalImageContext(g),
   }
 }
 
@@ -66,7 +92,7 @@ export function buildUnknownFallback(g: GeminiResult) {
   return {
     success: true,
     type: 'UNKNOWN' as const,
-    arabic_indopak: g.extracted_arabic,
+    arabic_indopak: arabicForDisplayCard(g),
     urdu_translation: g.translation_ur || '',
     transliteration: g.transliteration_en || '',
     english_translation: g.translation_en || '',
@@ -78,6 +104,7 @@ export function buildUnknownFallback(g: GeminiResult) {
         g.notes ||
         'Could not match Quran, Hadith, or Azkar database',
     },
+    ...optionalImageContext(g),
   }
 }
 
@@ -86,7 +113,7 @@ export function buildQuranFallback(g: GeminiResult) {
   return {
     success: true,
     type: 'AYAT' as const,
-    arabic_indopak: g.extracted_arabic,
+    arabic_indopak: arabicForDisplayCard(g),
     urdu_translation: g.translation_ur || '',
     transliteration: g.transliteration_en || '',
     english_translation: g.translation_en || '',
@@ -98,5 +125,6 @@ export function buildQuranFallback(g: GeminiResult) {
       ayat_end: g.ayat_end ?? g.ayat_start ?? undefined,
       reference_text: g.reference_in_image || undefined,
     },
+    ...optionalImageContext(g),
   }
 }

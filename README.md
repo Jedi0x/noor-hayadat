@@ -1,116 +1,164 @@
-# 📖 Quran Ayat & Azkar Scanner WebApp (QuranScan)
+# QuranScan
 
-QuranScan is a modern web application that identifies Quranic Ayat, Hadith, or Azkar from screenshots using Google Gemini Vision AI. It provides accurate references, IndoPak Arabic text, and Urdu translations in a beautifully rendered, shareable card format.
-
-**Repository:** [github.com/Jedi0x/noor-hayadat](https://github.com/Jedi0x/noor-hayadat)
+Identify Quranic verses, Hadith, and Azkar from screenshots using Google Gemini Vision AI. Results are displayed with authentic Indo-Pak Arabic typography, full diacritical marks (shadda, maddah, harakat), and Urdu translations in a shareable card format.
 
 ---
 
-## 🚀 Step-by-Step Setup Guide
+## Features
 
-Follow these instructions to get the project running on your local machine.
-
-### 1. Prerequisites
-
-Ensure you have the following installed:
-- **Node.js 18+**
-- **MySQL Server** (WAMP, XAMPP, or a standalone MySQL installation)
-- **Google Gemini API Key** (Get it from [Google AI Studio](https://aistudio.google.com/app/apikey))
+- AI-powered recognition of Quran, Hadith, and Azkar from images
+- Authentic Indo-Pak Mushaf fonts with complete tashkeel
+- Urdu translation in Nastaliq calligraphy
+- English transliteration and meaning
+- Download result as high-resolution image or share via Web Share API
+- Audio playback for Quranic verses
 
 ---
 
-### 2. Database Setup (MySQL)
+## Prerequisites
 
-1.  **Start MySQL**: Ensure your MySQL server is running (e.g., start WAMP/XAMPP).
-2.  **Create Database**: Open your MySQL terminal or a tool like phpMyAdmin and create a new database named `quran_scanner`:
-    ```sql
-    CREATE DATABASE quran_scanner CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-    ```
+- Node.js 18+
+- MySQL server (WAMP, XAMPP, or standalone)
+- Google Gemini API key — [Get one here](https://aistudio.google.com/app/apikey)
 
 ---
 
-### 3. Project Initialization
+## Setup
 
-1.  **Clone/Open the Project**: Open the project folder in your IDE (e.g., Cursor or VS Code).
-2.  **Install Dependencies**:
-    ```bash
-    npm install
-    ```
+### 1. Install dependencies
 
----
+```bash
+npm install
+```
 
-### 4. Configuration
+### 2. Configure environment
 
-1.  **Create `.env.local`**: Copy the contents of `.env.local.example` into a new file named `.env.local`.
-    ```bash
-    cp .env.local.example .env.local
-    ```
-2.  **Edit `.env.local`**: Update the following variables:
-    - `DATABASE_URL`: Change this to your MySQL connection string.
-      - Format: `mysql://USER:PASSWORD@localhost:3306/quran_scanner`
-      - *Note: If you are using WAMP with no password, it might look like: `mysql://root:@localhost:3306/quran_scanner`*
-    - `GEMINI_API_KEY`: Paste your API key from Google AI Studio.
+```bash
+cp .env.local.example .env.local
+```
 
----
+Edit `.env.local`:
 
-### 5. Font Assets
+```env
+DATABASE_URL="mysql://root:@localhost:3306/quran_scanner"
+GEMINI_API_KEY="your_key_here"
+```
 
-For the IndoPak Arabic and Urdu Nastaliq fonts to render correctly, ensure the following files are in the `public/fonts/` directory:
-- `NoorHiraArabic.woff2`
-- `NafeesWebNaskh.woff2`
+### 3. Create the database
 
----
+```sql
+CREATE DATABASE quran_scanner CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+```
 
-### 6. Database Migration & Seeding
+### 4. Push schema
 
-1.  **Sync Database Schema**: Run the Prisma migration to create the tables in your MySQL database:
-    ```bash
-    npx prisma db push
-    ```
-2.  **Seed Data**: Run the seed scripts to populate the database with Quranic surahs, Hadith books, and sample Azkar:
-    ```bash
-    # Seed Surahs (fetches from quran.com API)
-    npm run seed:quran
+```bash
+npm run db:push
+```
 
-    # Seed Hadith Books
-    npm run seed:hadith
+### 5. Seed Quran data
 
-    # Seed Sample Azkar
-    npm run seed:azkar
-    ```
+```bash
+npm run seed:quran
+```
 
----
+> Takes 5–10 minutes. Seeds all 114 surahs and 6,236 verses with full diacritics in Uthmani script, Indo-Pak script, and Urdu translation.
 
-### 7. Running the Application
+Optionally seed Hadith and Azkar:
 
-1.  **Start the Development Server**:
-    ```bash
-    npm run dev
-    ```
-2.  **Open in Browser**: Navigate to [http://localhost:3000](http://localhost:3000).
+```bash
+npm run seed:hadith
+npm run seed:azkar
+# or everything at once:
+npm run seed:all
+```
+
+### 6. Run
+
+```bash
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000).
 
 ---
 
-## 🛠 Project Structure
+## Scripts
 
-- `app/`: Next.js 14 App Router (Pages & API routes)
-- `components/`: Reusable UI components (Upload, Result Card, etc.)
-- `lib/`: Core logic (Gemini API, Reference lookup, Arabic utils)
-- `prisma/`: Database schema and seed scripts
-- `styles/`: Custom CSS (Tailwind + Arabic font styles)
-- `public/`: Static assets (Fonts, Images)
-
----
-
-## 📜 Key Commands
-
-- `npm run dev`: Starts the development server.
-- `npx prisma studio`: Opens a GUI to view and edit your database records.
-- `npx prisma generate`: Regenerates the Prisma client (run this after changing `schema.prisma`).
-- `npx prisma db push`: Pushes the Prisma schema to the database.
+| Command | Description |
+|---|---|
+| `npm run dev` | Start development server |
+| `npm run build` | Production build |
+| `npm run db:push` | Push Prisma schema to database |
+| `npm run db:studio` | Open Prisma Studio |
+| `npm run seed:quran` | Seed complete Quran (required) |
+| `npm run seed:hadith` | Seed Hadith collections |
+| `npm run seed:azkar` | Seed morning/evening supplications |
+| `npm run seed:all` | Seed everything |
 
 ---
 
-## 🤝 Support
+## Project Structure
 
-If you encounter any issues, please ensure your MySQL connection string is correct and your Gemini API key is active.
+```
+├── app/                  # Next.js App Router pages and API routes
+├── components/           # UI components
+│   ├── layout/           # Header, Footer
+│   ├── result/           # Result card, Arabic display, action bar
+│   ├── scanner/          # Scanning overlay, progress steps
+│   ├── ui/               # Shared UI elements
+│   └── upload/           # Dropzone, image cropper
+├── lib/                  # Core logic (Gemini, lookups, Arabic utils)
+├── prisma/               # Schema and seed scripts
+├── public/fonts/         # Arabic and Urdu font files
+└── styles/               # Arabic typography CSS
+```
+
+---
+
+## Fonts (optional)
+
+The app uses Google Fonts (Amiri Quran, Scheherazade New) by default. For authentic Indo-Pak Mushaf rendering, place these font files in `public/fonts/`:
+
+- **Al Qalam Quran** / **PDMS Saleem QuranFont** — Indo-Pak script
+- **Nafees Nastaleeq** — Urdu Nastaliq
+
+See `public/fonts/README.md` for download links and instructions.
+
+---
+
+## Why seeding matters
+
+Without seeding the database, the app falls back to AI-extracted text which may be missing diacritical marks. After running `npm run seed:quran`, the app retrieves verified Quranic text with complete tashkeel directly from the database.
+
+---
+
+## Tech stack
+
+- **Framework**: Next.js 14 (App Router)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **Database**: MySQL via Prisma ORM
+- **AI**: Google Gemini 1.5 Flash
+- **Animations**: Framer Motion
+- **Image processing**: Sharp, html2canvas
+
+---
+
+## Environment variables
+
+| Variable | Required | Description |
+|---|---|---|
+| `DATABASE_URL` | Yes | MySQL connection string |
+| `GEMINI_API_KEY` | Yes | Google AI Studio key |
+| `NEXT_PUBLIC_APP_URL` | No | Deployed app URL |
+| `SUNNAH_API_KEY` | No | Sunnah.com API key |
+
+---
+
+## Credits
+
+- Quran data: [quran.com API](https://quran.com)
+- Hadith data: [sunnah.com](https://sunnah.com)
+- Azkar: Hisnul Muslim
+- Fonts: PDMS, Nafees, Amiri, Scheherazade

@@ -2,19 +2,65 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Light theme only — dark OS mode was forcing white body text on cream UI (unreadable Arabic). */
+/* Traditional Mushaf-inspired theme */
 :root {
-  --foreground-rgb: 13, 59, 46; /* emerald-950 */
-  --background-start-rgb: 245, 240, 232; /* cream-50 */
-  --background-end-rgb: 255, 253, 246; /* cream-100 */
+  --foreground: 42 47 36; /* sage-900 */
+  --background-start: 253 251 247; /* sand-50 */
+  --background-end: 248 250 247; /* sage-50 */
+  --accent: 168 130 79; /* bronze-500 */
+  --accent-hover: 142 108 66; /* bronze-600 */
+}
+
+* {
+  @apply border-sage-200;
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
+  color: rgb(var(--foreground));
   background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+    to bottom,
+    rgb(var(--background-end)),
+    rgb(var(--background-start))
+  );
+  min-height: 100vh;
+  font-feature-settings: 'kern' 1, 'liga' 1;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Elegant selection */
+::selection {
+  @apply bg-bronze-200 text-sage-900;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-sand-100;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-bronze-300 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-bronze-400;
+}
+
+/* Smooth focus rings */
+:focus-visible {
+  @apply outline-none ring-2 ring-bronze-400 ring-offset-2 ring-offset-sand-50;
+}
+
+/* Remove default button/input styles */
+button,
+input,
+textarea,
+select {
+  @apply focus:outline-none;
 }

@@ -12,13 +12,13 @@ interface ActionBarProps {
   audioUrl?: string
 }
 
-export const ActionBar: React.FC<ActionBarProps> = ({ 
-  onCopyArabic, 
-  onCopyUrdu, 
-  onDownload, 
-  onShare, 
+export const ActionBar: React.FC<ActionBarProps> = ({
+  onCopyArabic,
+  onCopyUrdu,
+  onDownload,
+  onShare,
   onListen,
-  audioUrl 
+  audioUrl,
 }) => {
   const [copied, setCopied] = useState<string | null>(null)
   const audioRef = useRef<HTMLAudioElement | null>(null)
@@ -28,7 +28,7 @@ export const ActionBar: React.FC<ActionBarProps> = ({
     if (type === 'ar') onCopyArabic()
     else onCopyUrdu()
     setCopied(type)
-    setTimeout(() => setCopied(null), 2000)
+    setTimeout(() => setCopied(null), 2500)
   }
 
   const toggleAudio = () => {
@@ -41,58 +41,71 @@ export const ActionBar: React.FC<ActionBarProps> = ({
   }
 
   return (
-    <div className="flex flex-wrap items-center justify-center gap-3 pt-8 border-t border-emerald-950/10">
+    <div className="flex flex-wrap items-center justify-center gap-4">
       {audioUrl && (
         <>
-          <audio 
-            ref={audioRef} 
-            src={audioUrl} 
-            onPlay={() => setIsPlaying(true)} 
+          <audio
+            ref={audioRef}
+            src={audioUrl}
+            onPlay={() => setIsPlaying(true)}
             onPause={() => setIsPlaying(false)}
             onEnded={() => setIsPlaying(false)}
           />
           <button
             onClick={toggleAudio}
-            className={`flex items-center px-6 py-2.5 rounded-full border transition-all duration-300 ${
-              isPlaying ? 'bg-emerald-950 text-cream-50' : 'bg-white text-emerald-950 border-emerald-950/10 hover:bg-emerald-950/5'
+            className={`group flex items-center gap-2.5 px-7 py-3.5 rounded-full font-semibold text-sm transition-all duration-300 shadow-soft hover:shadow-soft-lg ${
+              isPlaying
+                ? 'bg-sage-900 text-white border-2 border-sage-900'
+                : 'bg-white text-sage-800 border-2 border-sage-200 hover:bg-sage-50 hover:border-sage-300'
             }`}
           >
-            <Volume2 className={`w-4 h-4 mr-2 ${isPlaying ? 'animate-pulse' : ''}`} />
-            <span className="text-xs font-bold uppercase tracking-widest">{isPlaying ? 'Playing' : 'Listen'}</span>
+            <Volume2 className={`w-5 h-5 ${isPlaying ? 'animate-pulse text-bronze-300' : ''}`} strokeWidth={2} />
+            <span className="uppercase tracking-wide">
+              {isPlaying ? 'Playing...' : 'Listen'}
+            </span>
           </button>
         </>
       )}
 
       <button
         onClick={() => handleCopy('ar')}
-        className="flex items-center px-6 py-2.5 bg-white text-emerald-950 border border-emerald-950/10 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-emerald-950/5 transition-all"
+        className="group flex items-center gap-2.5 px-7 py-3.5 bg-white text-sage-800 border-2 border-sage-200 rounded-full text-sm font-semibold uppercase tracking-wide hover:bg-sage-50 hover:border-sage-300 transition-all shadow-soft hover:shadow-soft-lg"
       >
-        {copied === 'ar' ? <Check className="w-4 h-4 mr-2 text-green-600" /> : <Copy className="w-4 h-4 mr-2" />}
+        {copied === 'ar' ? (
+          <Check className="w-5 h-5 text-sage-600" strokeWidth={2.5} />
+        ) : (
+          <Copy className="w-5 h-5 text-sage-600" strokeWidth={2} />
+        )}
         Copy Arabic
       </button>
 
       <button
         onClick={() => handleCopy('ur')}
-        className="flex items-center px-6 py-2.5 bg-white text-emerald-950 border border-emerald-950/10 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-emerald-950/5 transition-all"
+        className="group flex items-center gap-2.5 px-7 py-3.5 bg-white text-sage-800 border-2 border-sage-200 rounded-full text-sm font-semibold uppercase tracking-wide hover:bg-sage-50 hover:border-sage-300 transition-all shadow-soft hover:shadow-soft-lg"
       >
-        {copied === 'ur' ? <Check className="w-4 h-4 mr-2 text-green-600" /> : <Copy className="w-4 h-4 mr-2" />}
+        {copied === 'ur' ? (
+          <Check className="w-5 h-5 text-sage-600" strokeWidth={2.5} />
+        ) : (
+          <Copy className="w-5 h-5 text-sage-600" strokeWidth={2} />
+        )}
         Copy Urdu
       </button>
 
       <button
         onClick={onDownload}
-        className="flex items-center px-6 py-2.5 bg-white text-emerald-950 border border-emerald-950/10 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-emerald-950/5 transition-all"
+        className="group flex items-center gap-2.5 px-7 py-3.5 bg-white text-sage-800 border-2 border-sage-200 rounded-full text-sm font-semibold uppercase tracking-wide hover:bg-sage-50 hover:border-sage-300 transition-all shadow-soft hover:shadow-soft-lg"
       >
-        <Download className="w-4 h-4 mr-2" />
+        <Download className="w-5 h-5 text-sage-600" strokeWidth={2} />
         Download
       </button>
 
       <button
         onClick={onShare}
-        className="flex items-center px-8 py-2.5 bg-emerald-950 text-cream-50 rounded-full text-xs font-bold uppercase tracking-[0.2em] hover:bg-emerald-900 transition-all shadow-lg shadow-emerald-950/20"
+        className="group relative flex items-center gap-2.5 px-9 py-3.5 bg-gradient-to-r from-bronze-500 to-bronze-600 text-white rounded-full text-sm font-bold uppercase tracking-[0.15em] hover:from-bronze-600 hover:to-bronze-700 transition-all shadow-soft-lg hover:shadow-2xl overflow-hidden"
       >
-        <Share2 className="w-4 h-4 mr-2 text-gold-500" />
-        Share
+        <div className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-colors duration-300"></div>
+        <Share2 className="w-5 h-5 relative z-10" strokeWidth={2} />
+        <span className="relative z-10">Share</span>
       </button>
     </div>
   )

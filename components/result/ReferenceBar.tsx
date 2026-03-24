@@ -19,13 +19,13 @@ export const ReferenceBar: React.FC<{ reference?: Reference | null }> = ({ refer
       const ayah = r.ayat_start ?? '—'
       return {
         isDua: false,
-        display: `The Holy Quran | Surah ${surah} | Ayah: ${ayah}`,
+        display: `The Holy Quran · Surah ${surah} · Ayah ${ayah}`,
       }
     }
     if (r.type === 'hadith') {
       const book = r.book_name_en ?? r.book_name_ur ?? 'Hadith'
       const num = r.hadith_number ?? '—'
-      return { isDua: false, display: `${book} | Hadith: ${num}` }
+      return { isDua: false, display: `${book} · Hadith ${num}` }
     }
     if (r.type === 'azkar') {
       const cat = r.category ? `${r.category} · ` : ''
@@ -37,7 +37,7 @@ export const ReferenceBar: React.FC<{ reference?: Reference | null }> = ({ refer
     if (r.type === 'dua') {
       const title = r.dua_name_en || r.dua_name_ar || 'Supplication'
       const extra = r.reference_text && r.reference_text !== title ? ` · ${r.reference_text}` : ''
-      return { isDua: true, display: `Dua | ${title}${extra}` }
+      return { isDua: true, display: `${title}${extra}` }
     }
     return {
       isDua: false,
@@ -48,9 +48,11 @@ export const ReferenceBar: React.FC<{ reference?: Reference | null }> = ({ refer
   const Icon = isDua ? Heart : Book
 
   return (
-    <div className="flex items-center bg-gold-500/10 px-4 py-2 rounded-full border border-gold-500/20 max-w-[min(100%,42rem)]">
-      <Icon className="w-4 h-4 text-gold-500 mr-2 shrink-0" aria-hidden />
-      <span className="text-sm font-bold text-emerald-950/70 text-left leading-snug">{display}</span>
+    <div className="inline-flex items-center gap-3 bg-gradient-to-r from-bronze-100/70 to-sand-100/70 px-5 py-2.5 rounded-full border-2 border-bronze-300/40 shadow-soft backdrop-blur-sm">
+      <div className="flex items-center justify-center">
+        <Icon className="w-4 h-4 text-bronze-600" strokeWidth={2.5} aria-hidden />
+      </div>
+      <span className="text-xs font-bold uppercase tracking-wider text-sage-900 leading-tight">{display}</span>
     </div>
   )
 }

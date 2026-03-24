@@ -1,52 +1,271 @@
 /*
- * Quranic Arabic & Urdu typography.
- * Optional local fonts: place NoorHiraArabic.woff2 and NafeesWebNaskh.woff2 in public/fonts/
- * and uncomment the @font-face blocks below. Until then, Google Fonts (layout.tsx) are used.
+ * Traditional Indo-Pak Quranic & Urdu Typography
+ * Authentic Mushaf-style fonts with full diacritics support
  */
 
-/* Uncomment when files exist at public/fonts/
+/* PDMS Saleem QuranFont - Primary Indo-Pak style */
 @font-face {
-  font-family: 'NoorHira';
-  src: url('/fonts/NoorHiraArabic.woff2') format('woff2');
+  font-family: 'PDMS Saleem QuranFont';
+  src: url('/fonts/PDMS_Saleem_QuranFont.woff2') format('woff2'),
+       url('/fonts/PDMS_Saleem_QuranFont.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
   font-display: swap;
 }
 
+/* Al Qalam Quran - Traditional calligraphic style */
 @font-face {
-  font-family: 'NafeesWeb';
-  src: url('/fonts/NafeesWebNaskh.woff2') format('woff2');
+  font-family: 'Al Qalam Quran';
+  src: url('/fonts/Al Qalam Quran.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
   font-display: swap;
 }
-*/
 
+/* Al Majeed Quranic Font - Elegant Mushaf style */
+@font-face {
+  font-family: 'Al Majeed Quranic';
+  src: url('/fonts/Al Majeed Quranic Font_shiped.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Hafs - Classic Quranic typography */
+@font-face {
+  font-family: 'Hafs';
+  src: url('/fonts/Hafs.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Nabi - Decorative Quranic font */
+@font-face {
+  font-family: 'Nabi';
+  src: url('/fonts/Nabi.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Nafees Nastaleeq (if added) - Urdu calligraphy */
+@font-face {
+  font-family: 'Nafees Nastaleeq';
+  src: url('/fonts/Nafees_Nastaleeq.woff2') format('woff2'),
+       url('/fonts/Nafees_Nastaleeq.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ============================================
+   MAIN QURANIC ARABIC (Indo-Pak Mushaf style)
+   ============================================ */
 .arabic-indopak {
-  /* Scheherazade New + Noto Naskh Arabic load from Google Fonts (no 404) */
-  font-family: 'Scheherazade New', 'Noto Naskh Arabic', 'Amiri', serif;
-  font-size: clamp(1.8rem, 4vw, 3rem);
-  line-height: 2.2;
+  /* Priority: Al Qalam (most authentic) → PDMS Saleem → Al Majeed → Google Fonts */
+  font-family:
+    'Al Qalam Quran',
+    'PDMS Saleem QuranFont',
+    'Al Majeed Quranic',
+    'Hafs',
+    'Amiri Quran',
+    'Scheherazade New',
+    'Lateef',
+    'Noto Naskh Arabic',
+    serif;
+  font-size: clamp(3rem, 6.5vw, 4.5rem);
+  font-weight: 400;
+  line-height: 2.75;
   direction: rtl;
-  text-align: right;
-  letter-spacing: 0;
-  color: #0d3b2e; /* emerald-950 — explicit contrast on light panels */
+  text-align: center;
+  letter-spacing: 0.015em;
+  word-spacing: 0.2em;
+  color: rgb(42 47 36); /* sage-900 */
+  
+  /* Typography features for proper rendering */
+  font-feature-settings: 'kern' 1, 'liga' 1, 'dlig' 1, 'calt' 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  
+  /* Ensure diacritics don't clip */
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
 }
 
-.urdu-text {
-  font-family: 'Noto Nastaliq Urdu', 'Noto Sans Arabic', serif;
-  font-size: clamp(1.1rem, 2vw, 1.4rem);
-  line-height: 2;
+/* Alternative Quranic style (for variety) */
+.arabic-nabi {
+  font-family:
+    'Nabi',
+    'Al Majeed Quranic',
+    'Amiri Quran',
+    serif;
+  font-size: clamp(2.25rem, 6vw, 4rem);
+  line-height: 2.6;
   direction: rtl;
-  text-align: right;
-  color: inherit;
+  text-align: center;
+  color: rgb(42 47 36);
+  font-feature-settings: 'kern' 1, 'liga' 1;
 }
 
+/* Standard Arabic Naskh (for Hadith, general Arabic) */
 .arabic-naskh {
-  font-family: 'Noto Naskh Arabic', 'Scheherazade New', 'Amiri', serif;
-  font-size: clamp(1.5rem, 3.5vw, 2.5rem);
-  line-height: 2;
+  font-family:
+    'Hafs',
+    'Amiri',
+    'Noto Naskh Arabic',
+    'Scheherazade New',
+    serif;
+  font-size: clamp(1.85rem, 5vw, 3.25rem);
+  line-height: 2.5;
+  direction: rtl;
+  text-align: center;
+  color: rgb(42 47 36);
+  font-feature-settings: 'kern' 1, 'liga' 1;
+}
+
+/* ============================================
+   URDU NASTALIQ CALLIGRAPHY
+   ============================================ */
+.urdu-text {
+  font-family: 
+    'Nafees Nastaleeq', 
+    'Noto Nastaliq Urdu', 
+    'Jameel Noori Nastaleeq', 
+    serif;
+  font-size: clamp(1.6rem, 2.8vw, 2rem);
+  line-height: 2.6;
   direction: rtl;
   text-align: right;
-  color: #0d3b2e;
+  color: rgb(82 98 75); /* sage-700 */
+  font-weight: normal;
+  letter-spacing: normal;
+  word-spacing: 0.1em;
+}
+
+/* Urdu headings/titles */
+.urdu-heading {
+  font-family: 
+    'Nafees Nastaleeq', 
+    'Noto Nastaliq Urdu', 
+    serif;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  line-height: 2.4;
+  direction: rtl;
+  text-align: right;
+  color: rgb(61 71 55); /* sage-800 */
+  font-weight: bold;
+}
+
+/* ============================================
+   ENGLISH TRANSLITERATION
+   ============================================ */
+.text-transliteration {
+  font-family: 'Georgia', 'Palatino', 'Times New Roman', serif;
+  font-style: italic;
+  font-size: clamp(1.25rem, 2.2vw, 1.6rem);
+  line-height: 1.85;
+  color: rgb(82 98 75); /* sage-700 */
+  letter-spacing: 0.02em;
+  word-spacing: 0.05em;
+}
+
+/* ============================================
+   SPECIAL ELEMENTS
+   ============================================ */
+
+/* Verse number markers (Indo-Pak style) */
+.verse-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.25rem;
+  height: 2.25rem;
+  padding: 0 0.5rem;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, rgb(209 180 140 / 0.15), rgb(168 130 79 / 0.12));
+  border: 2px solid rgb(209 180 140 / 0.35);
+  font-family: 'Inter', 'Amiri', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: rgb(122 99 64); /* sand-800 */
+  margin: 0 0.75rem;
+  box-shadow: 0 2px 8px rgba(168, 130, 79, 0.1);
+}
+
+/* Basmala (Bismillah) - special styling */
+.basmala {
+  font-family:
+    'Al Qalam Quran',
+    'Al Majeed Quranic',
+    'PDMS Saleem QuranFont',
+    'Amiri Quran',
+    serif;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  line-height: 2.8;
+  color: rgb(82 98 75); /* sage-700 */
+  margin: 2rem 0;
+  text-align: center;
+  direction: rtl;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+
+/* Surah headers */
+.surah-header {
+  font-family:
+    'Nabi',
+    'Al Majeed Quranic',
+    'Amiri Quran',
+    serif;
+  font-size: clamp(1.75rem, 4vw, 2.75rem);
+  line-height: 2.2;
+  color: rgb(117 87 57); /* bronze-700 */
+  text-align: center;
+  direction: rtl;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: none;
+}
+
+/* Dua/Azkar titles */
+.dua-title {
+  font-family:
+    'Al Majeed Quranic',
+    'Nabi',
+    'Amiri',
+    serif;
+  font-size: clamp(1.5rem, 3.5vw, 2.25rem);
+  line-height: 2.3;
+  color: rgb(82 98 75); /* sage-700 */
+  text-align: center;
+  direction: rtl;
+  font-weight: 600;
+}
+
+/* ============================================
+   RESPONSIVE ADJUSTMENTS
+   ============================================ */
+
+@media (max-width: 640px) {
+  .arabic-indopak {
+    line-height: 2.5;
+    word-spacing: 0.15em;
+  }
+  
+  .urdu-text {
+    line-height: 2.4;
+  }
+}
+
+/* Dark mode override (if ever needed) */
+@media (prefers-color-scheme: dark) {
+  .arabic-indopak,
+  .arabic-naskh,
+  .basmala,
+  .surah-header {
+    /* Keep light theme for better Arabic readability */
+    color: rgb(42 47 36);
+  }
 }
